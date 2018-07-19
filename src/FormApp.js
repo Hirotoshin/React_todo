@@ -1,4 +1,5 @@
 import  React, {Component} from  'react';
+import  request from "superagent";
 
 export  class FormApp extends Component{
 
@@ -6,29 +7,47 @@ export  class FormApp extends Component{
         super(props);
         this.state = {
             value:'',
-            message:''
+            messages:[]
 
         };
+    }
+
+    getMessages(){
+        request
+            .get("http://127.0.0.1:5000/message")
+            .then(response =>{
+                console.log(response);
+                this.setState({
+                    messages:response.body.Allmessage
+                })
+            })
+
+    }
+    componentDidMount(){
+        this.interval = setInterval(this.getMessages.bind(this), 100);
     }
     handleInput({target:{value}}){
        this.setState({
            value
        });
 
-
-
-        console.log('handleInput calded');
-        console.log(this.props.name);
     }
     send(){
        const {value} = this.state;
-        this.setState({
-            value:"",
-            message:value
-        });
 
+        request
+            .post("http://127.0.0.1:5000/message")
+            .set("Content-Type","application/json")
+            .send({
+                message:value
+            })
+            .then(res => {
+                console.log(res);
+                this.setState({
+                    messages:res.body.Allmessage
+                })
+            })
 
-        console.log('send called');
     }
 
     render(){
@@ -36,7 +55,11 @@ export  class FormApp extends Component{
             <div>
                 <input type ="text" value={this.state.value} onChange={this.handleInput.bind(this)}/>
                 <button onClick={this.send.bind(this)}>SEND</button>
-                <div>{this.state.message}</div>
+                {this.state.messages.map((message) =>{
+                    return <div>{message}</div>
+                }
+                )
+                }
                 </div>
         );
 
