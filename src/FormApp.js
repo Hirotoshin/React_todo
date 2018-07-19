@@ -11,6 +11,17 @@ export  class FormApp extends Component{
 
         };
     }
+
+    componentDidMount(){
+        request
+            .get("http://127.0.0.1:5000/message")
+            .then(response =>{
+                console.log(response);
+                this.setState({
+                    messages:response.body.Allmessage
+                })
+            })
+    }
     handleInput({target:{value}}){
        this.setState({
            value
