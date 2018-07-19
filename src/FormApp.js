@@ -12,7 +12,7 @@ export  class FormApp extends Component{
         };
     }
 
-    componentDidMount(){
+    getMessages(){
         request
             .get("http://127.0.0.1:5000/message")
             .then(response =>{
@@ -21,6 +21,10 @@ export  class FormApp extends Component{
                     messages:response.body.Allmessage
                 })
             })
+
+    }
+    componentDidMount(){
+        this.interval = setInterval(this.getMessages.bind(this), 100);
     }
     handleInput({target:{value}}){
        this.setState({
